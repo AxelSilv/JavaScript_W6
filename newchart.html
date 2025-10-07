@@ -3,29 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Week 6</title>
+  <title>Births & deaths</title>
   <script src="https://unpkg.com/frappe-charts@latest/dist/frappe-charts.min.umd.js" defer></script>
-  <script defer src="app.js"></script>
+  <script src="newchart.js" defer></script>
   <style>
     body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#eceff1}
     .wrap{max-width:960px;margin:24px auto;padding:0 16px}
-    .controls{display:flex;gap:8px;margin:0 0 12px}
-    #input-area{flex:1;padding:10px;border:1px solid #cfd8dc;border-radius:10px}
-    #submit-data,#add-data{padding:10px 14px;border:0;border-radius:10px;background:#37474f;color:#fff;cursor:pointer}
     #chart{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:12px}
     #navigation{display:inline-block;padding:10px 14px;background:#37474f;color:#fff;border-radius:10px;text-decoration:none}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Week 6: Population fetch</h1>
-    <div class="controls">
-      <input id="input-area" type="text" placeholder="Type municipality, e.g. Helsinki" autocomplete="off">
-      <button id="submit-data" type="button">Fetch municipality</button>
-      <button id="add-data" type="button">Add data</button>
-    </div>
     <div id="chart"></div>
-    <a id="navigation" href="newchart.html">View birth and death charts</a>
+    <a id="navigation" href="index.html">Go back</a>
   </div>
 </body>
 </html>
