@@ -7,9 +7,9 @@ let AREA_NAME_BY_CODE = {};
 document.addEventListener("DOMContentLoaded", async () => {
   const areaCode = sessionStorage.getItem("wk6_area_code") || "SSS";
   await loadAreas();
-  const births = await postFor(areaCode, "vm01");
-  const deaths = await postFor(areaCode, "vm11");
-  render(births, deaths, areaCode);
+  const birthsJson = await postFor(areaCode, "vm01"); // Births
+  const deathsJson = await postFor(areaCode, "vm11"); // Deaths
+  render(birthsJson, deathsJson, areaCode);
 });
 
 async function loadAreas(){
@@ -37,20 +37,10 @@ async function postFor(areaCode, infoCode){
   return res.json();
 }
 
-function valuesByYear(json){
-  const idx = json.dimension.Vuosi.category.index;
-  const out = [];
-  for(let y=2000;y<=2021;y++){
-    const key = String(y);
-    out.push(Number(json.value[idx[key]]));
-  }
-  return out;
-}
-
-function render(birthJson, deathJson, areaCode){
+function render(birthsJson, deathsJson, areaCode){
   const labels = years(2000, 2021);
-  const births = valuesByYear(birthJson);
-  const deaths = valuesByYear(deathJson);
+  const births = birthsJson.value.map(Number); // samassa järjestyksessä kuin labels
+  const deaths = deathsJson.value.map(Number); // samassa järjestyksessä kuin labels
   const areaTitle = areaCode==="SSS" ? "whole country" : (AREA_NAME_BY_CODE[areaCode]||areaCode);
 
   const container = document.querySelector("#chart");
@@ -61,8 +51,8 @@ function render(birthJson, deathJson, areaCode){
     data:{
       labels,
       datasets:[
-        { name:"Births", values:births },
-        { name:"Deaths", values:deaths }
+        { name:"Births", values:births },    // dataset-0
+        { name:"Deaths", values:deaths }     // dataset-1
       ]
     },
     type:"bar",
