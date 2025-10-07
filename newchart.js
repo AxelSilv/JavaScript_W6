@@ -39,8 +39,8 @@ async function postFor(areaCode, infoCode){
 
 function render(birthsJson, deathsJson, areaCode){
   const labels = years(2000, 2021);
-  const births = birthsJson.value.map(Number); // samassa järjestyksessä kuin labels
-  const deaths = deathsJson.value.map(Number); // samassa järjestyksessä kuin labels
+  const births = birthsJson.value.map(Number); 
+  const deaths = deathsJson.value.map(Number); 
   const areaTitle = areaCode==="SSS" ? "whole country" : (AREA_NAME_BY_CODE[areaCode]||areaCode);
 
   const container = document.querySelector("#chart");
@@ -51,12 +51,12 @@ function render(birthsJson, deathsJson, areaCode){
     data:{
       labels,
       datasets:[
-        { name:"Births", values:births },    // dataset-0
-        { name:"Deaths", values:deaths }     // dataset-1
+        { name:"Deaths", values:deaths },    
+        { name:"Births", values:births }     
       ]
     },
     type:"bar",
     height:450,
-    colors:["#63d0ff","#363636"]
+    colors:["#363636","#63d0ff"]
   });
 }
