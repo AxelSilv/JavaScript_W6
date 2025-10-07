@@ -29,20 +29,42 @@ async function postFor(areaCode, infoCode){
     ],
     response:{ format:"json-stat2" }
   };
-  const res = await fetch(API,{ method:"POST", headers:{ "content-type":"application/json", accept:"application/json" }, body:JSON.stringify(body) });
+  const res = await fetch(API,{
+    method:"POST",
+    headers:{ "content-type":"application/json", accept:"application/json" },
+    body: JSON.stringify(body)
+  });
   return res.json();
+}
+
+function valuesByYear(json){
+  const idx = json.dimension.Vuosi.category.index;
+  const out = [];
+  for(let y=2000;y<=2021;y++){
+    const key = String(y);
+    out.push(Number(json.value[idx[key]]));
+  }
+  return out;
 }
 
 function render(birthJson, deathJson, areaCode){
   const labels = years(2000, 2021);
-  const births = birthJson.value.map(Number);
-  const deaths = deathJson.value.map(Number);
+  const births = valuesByYear(birthJson);
+  const deaths = valuesByYear(deathJson);
   const areaTitle = areaCode==="SSS" ? "whole country" : (AREA_NAME_BY_CODE[areaCode]||areaCode);
+
   const container = document.querySelector("#chart");
   container.innerHTML = "";
+
   new frappe.Chart("#chart",{
     title:`Births and deaths in ${areaTitle}`,
-    data:{ labels, datasets:[ {name:"Births", values:births}, {name:"Deaths", values:deaths} ] },
+    data:{
+      labels,
+      datasets:[
+        { name:"Births", values:births },
+        { name:"Deaths", values:deaths }
+      ]
+    },
     type:"bar",
     height:450,
     colors:["#63d0ff","#363636"]
