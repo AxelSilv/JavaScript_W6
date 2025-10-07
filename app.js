@@ -1,9 +1,9 @@
 const API = "https://statfin.stat.fi/PxWeb/api/v1/en/StatFin/synt/statfin_synt_pxt_12dy.px";
 
 function years(from, to) {
-  let yearSupport = [];
-  for (let i = from; i <= to; i++) yearSupport.push(String(i));
-  return yearSupport;
+  const arr = [];
+  for (let i = from; i <= to; i++) arr.push(String(i));
+  return arr;
 }
 
 let AREA_NAME_BY_CODE = {};
@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     await loadAreas();
     const data = await postForArea("SSS");
-    window.populationData = data;
     renderChart(data, "SSS");
   } catch (err) {
     console.error("Init error:", err);
@@ -26,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!txt) return;
     const code = findAreaCode(txt);
     if (!code) {
-      alert("Municipality not found. Try the official name (case-insensitive), e.g. Helsinki.");
+      alert("Municipality not found.");
       return;
     }
     try {
@@ -34,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       renderChart(data, code);
     } catch (e) {
       console.error(e);
-      alert("Fetching data failed for: " + (AREA_NAME_BY_CODE[code] || code));
+      alert("Fetching data failed.");
     }
   });
 });
@@ -44,7 +43,6 @@ async function loadAreas() {
   if (!res.ok) throw new Error(`Meta HTTP ${res.status}`);
   const meta = await res.json();
   const areaVar = (meta.variables || []).find(v => v.code === "Alue");
-  if (!areaVar) throw new Error("Area variable not found in metadata.");
   const codes = areaVar.values;
   const names = areaVar.valueTexts;
   AREA_NAME_BY_CODE = {};
@@ -59,15 +57,14 @@ async function loadAreas() {
 function findAreaCode(input) {
   const direct = input.toUpperCase();
   if (AREA_NAME_BY_CODE[direct]) return direct;
-  const byName = AREA_CODE_BY_NAME[input.toLowerCase()];
-  return byName || null;
+  return AREA_CODE_BY_NAME[input.toLowerCase()] || null;
 }
 
 async function postForArea(areaCode) {
-  const requestBody = {
+  const body = {
     query: [
-      { code: "Vuosi", selection: { filter: "item", values: years(2000, 2021) } },
-      { code: "Alue", selection: { filter: "item", values: [areaCode] } },
+      { code: "Vuosi",  selection: { filter: "item", values: years(2000, 2021) } },
+      { code: "Alue",   selection: { filter: "item", values: [areaCode] } },
       { code: "Tiedot", selection: { filter: "item", values: ["vaesto"] } }
     ],
     response: { format: "json-stat2" }
@@ -75,34 +72,30 @@ async function postForArea(areaCode) {
   const res = await fetch(API, {
     method: "POST",
     headers: { "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify(requestBody)
+    body: JSON.stringify(body)
   });
   if (!res.ok) throw new Error(`POST HTTP ${res.status}`);
   return res.json();
 }
 
 function renderChart(json, areaCode) {
-  const idx = json.dimension.Vuosi.category.index;
-  const labels = [];
-  const values = [];
-  for (let y = 2000; y <= 2021; y++) {
-    const key = String(y);
-    labels.push(key);
-    values.push(Number(json.value[idx[key]]));
-  }
-  const areaName = AREA_NAME_BY_CODE[areaCode] || areaCode;
+  const labels = years(2000, 2021);
+  const values = json.value.map(Number);
+
+  const areaTitle = areaCode === "SSS"
+    ? "whole country"
+    : (AREA_NAME_BY_CODE[areaCode] || areaCode);
+
   const data = { labels, datasets: [{ name: "Population", values }] };
-  if (!chart) {
-    chart = new frappe.Chart("#chart", {
-      title: `Population of ${areaName} (2000–2021)`,
-      data,
-      type: "line",
-      height: 450,
-      colors: ["#eb5146"],
-      lineOptions: { hideDots: 1, regionFill: 0 }
-    });
-  } else {
-    chart.update(data);
-    chart.parent.querySelector(".title").textContent = `Population of ${areaName} (2000–2021)`;
-  }
+
+  const container = document.querySelector("#chart");
+  container.innerHTML = "";
+  chart = new frappe.Chart("#chart", {
+    title: `Population growth in ${areaTitle}`,
+    data,
+    type: "line",
+    height: 450,
+    colors: ["#eb5146"],
+    lineOptions: { hideDots: 0, dotSize: 3, regionFill: 0 }
+  });
 }
