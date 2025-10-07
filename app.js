@@ -105,15 +105,4 @@ function renderChart(json, areaCode) {
     chart.update(data);
     chart.parent.querySelector(".title").textContent = `Population of ${areaName} (2000–2021)`;
   }
-
-  const container = document.querySelector("#chart");
-  container.innerHTML = "";
-  char = new frappe.Chart("chart", {
-    title: `Population of ${areaName} (2000–2021)`,
-    data,
-    type: "line",
-    height: 450,
-    colors: ["#eb5146"],
-    lineOptions: { hideDots: 0, regionFill: 0, dotSize: 3 }
-  });
 }
