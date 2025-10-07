@@ -66,7 +66,7 @@ function findAreaCode(input) {
 async function postForArea(areaCode) {
   const requestBody = {
     query: [
-      { code: "Vuosi", selection: { filter: "item", values: years(1990, 2024) } },
+      { code: "Vuosi", selection: { filter: "item", values: years(2000, 2021) } },
       { code: "Alue", selection: { filter: "item", values: [areaCode] } },
       { code: "Tiedot", selection: { filter: "item", values: ["vaesto"] } }
     ],
@@ -105,4 +105,15 @@ function renderChart(json, areaCode) {
     chart.update(data);
     chart.parent.querySelector(".title").textContent = `Population of ${areaName} (2000–2021)`;
   }
+
+  const container = document.querySelector("#chart");
+  container.innerHTML = "";
+  char = new frappe.Chart("chart", {
+    title: `Population of ${areaName} (2000–2021)`,
+    data,
+    type: "line",
+    height: 450,
+    colors: ["#eb5146"],
+    lineOptions: { hideDots: 0, regionFill: 0, dotSize: 3 }
+  });
 }
