@@ -57,6 +57,6 @@ function render(birthsJson, deathsJson, areaCode){
     },
     type:"bar",
     height:450,
-    colors:["#363636","#63d0ff"]
+    colors:["#63d0ff","#363636"]
   });
 }
