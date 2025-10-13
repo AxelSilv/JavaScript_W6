@@ -51,8 +51,8 @@ function render(birthsJson, deathsJson, areaCode){
     data:{
       labels,
       datasets:[
-        { name:"Deaths", values:deaths },    
-        { name:"Births", values:births }     
+        { name:"Births", values:births },
+        { name:"Deaths", values:deaths }
       ]
     },
     type:"bar",
